@@ -1,0 +1,16 @@
+{% extends 'staff_me/base.html' %}
+{% block content %}
+<h2>Detail Barang</h2>
+
+<p><strong>Barang:</strong> {{ data.barang }}</p>
+<p><strong>Lokasi: </strong> {{ data.lokasi }}</p>
+<p><strong>Stok: </strong> {{ data.stok }}</p>
+<p><strong>Kondisi: </strong> {{ data.kondisi }}</p>
+
+
+<p>
+    <a href="{% url 'update_inventaris' data.kode_inventaris %}">Edit</a> |
+    <a href="{% url 'delete_inventaris' data.kode_inventaris %}">Hapus</a> |
+    <a href="{% url 'list_inventaris' %}">Kembali</a>
+</p>
+{% endblock %}

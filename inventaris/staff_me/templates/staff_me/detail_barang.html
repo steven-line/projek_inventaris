@@ -1,0 +1,17 @@
+{% extends 'staff_me/base.html' %}
+{% block content %}
+<h2>Detail Barang</h2>
+
+<p><strong>Nama:</strong> {{ data.nama }}</p>
+<p><strong>Jenis:</strong> {{ data.jenis_barang }}</p>
+<p><strong>Deskripsi:</strong> {{ data.deskripsi }}</p>
+{% if data.gambar %}
+    <img src="{{ data.gambar.url }}" width="200">
+{% endif %}
+
+<p>
+    <a href="{% url 'update_barang' data.id %}">Edit</a> |
+    <a href="{% url 'delete_barang' data.id %}">Hapus</a> |
+    <a href="{% url 'list_barang' %}">Kembali</a>
+</p>
+{% endblock %}

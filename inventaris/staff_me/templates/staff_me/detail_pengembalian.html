@@ -1,0 +1,25 @@
+{% extends 'staff_me/base.html' %}
+{% block content %}
+<h2>Detail Peminjaman</h2>
+<p><strong>Peminjam: </strong> {{ data.user }}</p>
+<p><strong>Staff: </strong> {{ data.staff }}</p>
+<p><strong>Status: </strong> {{ data.status }}</p>
+<p><strong>Keterangan: </strong> {{ data.keterangan}}</p>
+<p><strong>Tanggal Pinjam: </strong> {{ data.tanggal_pinjam}}</p>
+<p><strong>Tanggal Kembali: </strong> {{ data.tanggal_kembali}}</p>
+<p><strong>Tanggal Dikembalikan: </strong> {{ data.tanggal_dikembalikan }}</p>
+<p><strong>Catatan Staff: </strong> {{ data.catatan_staff}}</p>
+
+<h2>Details</h2>
+{% for detail in data_detail %}
+  <p>Barang: {{ detail.barang}}</p>
+  <p>Inventaris: {{ data_unit }}</p>
+  <p>Jumlah: {{ detail.jumlah }}</p>
+
+  <hr>
+{% endfor %}
+<p>
+ 
+    <a href="{% url 'list_pengembalian' %}">Kembali</a>
+</p>
+{% endblock %}

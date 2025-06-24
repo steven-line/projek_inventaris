@@ -1,0 +1,10 @@
+{% extends 'staff_me/base.html' %}
+{% block content %}
+<h2>Edit Jenis Barang: {{ jenis_barang.nama }}</h2>
+<form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Update</button>
+</form>
+<a href="{% url 'list_jenis_barang' %}">← Kembali ke Daftar Jenis Barang</a>
+{% endblock %}

@@ -1,0 +1,20 @@
+{% extends 'staff_me/base.html' %}
+{% block content %}
+<h2>Detail Pemindahan</h2>
+
+<p><strong>Staff: </strong> {{ data.staff }}</p>
+<p><strong>Tanggal Pemindahan: </strong> {{ data.tanggal_pemindahan }}</p>
+<p><strong>Keterangan: </strong> {{ data.keterangan}}</p>
+<h2>Details</h2>
+{% for detail in data_detail %}
+  <p>Inventaris: {{ detail.inventaris }}</p>
+  <p>Jumlah: {{ detail.jumlah }}</p>
+  <p>Lokasi Awal: {{ detail.lokasi_awal }}</p>
+  <p>Lokasi Tujuan: {{ detail.lokasi_tujuan }}</p>
+  <hr>
+{% endfor %}
+<p>
+    <a href="{% url 'update_pemindahan' data.id %}">Edit</a> |
+    <a href="{% url 'list_pemindahan' %}">Kembali</a>
+</p>
+{% endblock %}

@@ -1,0 +1,141 @@
+{% extends 'staff_me/base.html' %}
+{% block content %}
+<main>
+  <form method="POST">
+    {% csrf_token %}
+    {{ pemindahan_form }}
+    {{ pemindahan_detail_formset.non_form_errors }}
+    {{ pemindahan_detail_formset.management_form }}
+
+    <button id="add-form-btn" type="button" class="btn btn-success">+ Tambah Barang</button>
+  
+    <table class="table table-bordered" id="pemindahan-detail-table">
+      <thead>
+        <tr>
+          {% for field in pemindahan_detail_formset.forms.0.visible_fields %}
+            <th>{{ field.label }}</th>
+          {% endfor %}
+          <th>Aksi</th>
+        </tr>
+      </thead>
+
+<tbody id="pemindahan-detail-form-list">
+  {% for form in pemindahan_detail_formset %}
+    <tr class="pemindahan-detail-form">
+      {% for field in form.visible_fields %}
+        <td>
+          {{ field }}
+          {% for error in field.errors %}
+            <div class="text-danger small">{{ error }}</div>
+          {% endfor %}
+        </td>
+      {% endfor %}
+      <td>
+        {% if not forloop.first %}
+          <button type="button" class="remove-btn btn btn-danger btn-sm">Hapus</button>
+        {% endif %}
+      </td>
+    </tr>
+  {% endfor %}
+</tbody>
+
+    </table>
+
+    <!-- Form kosong untuk cloning -->
+    <table class="hidden">
+      <tr class="pemindahan-detail-form" id="empty-form">
+        {% for field in pemindahan_detail_formset.empty_form.visible_fields %}
+          <td>{{ field }}</td>
+        {% endfor %}
+        <td>
+          <button type="button" class="remove-btn btn btn-danger btn-sm">Hapus</button>
+        </td>
+      </tr>
+    </table>
+  <input type="submit" value="Kirim" class="btn btn-primary mt-3">
+  </form>
+</main>
+
+<script>
+  const addBtn = document.getElementById("add-form-btn");
+  const totalForms = document.getElementById("id_pemindahandetail_set-TOTAL_FORMS");
+  const formList = document.getElementById("pemindahan-detail-form-list");
+  const emptyForm = document.getElementById("empty-form");
+
+  addBtn.addEventListener("click", function (e) {
+    e.preventDefault();
+    const currentFormCount = document.querySelectorAll(".pemindahan-detail-form").length;
+    const newForm = emptyForm.cloneNode(true);
+    const regex = new RegExp('__prefix__', 'g');
+    newForm.innerHTML = newForm.innerHTML.replace(regex, currentFormCount);
+    newForm.setAttribute("id", `form-${currentFormCount}`);
+    newForm.classList.remove("hidden");
+    formList.appendChild(newForm);
+    updateTotalForms();
+    attachRemoveHandler(newForm);
+    attachChangeHandler(newForm);
+    updateSelectOptions();
+  });
+
+  function updateTotalForms() {
+    const total = document.querySelectorAll(".pemindahan-detail-form").length;
+    totalForms.value = total;
+  }
+
+  function getSelectedInventaris() {
+    const selected = [];
+    document.querySelectorAll("select[id$='-inventaris']").forEach(select => {
+      if (select.value) {
+        selected.push(select.value);
+      }
+    });
+    return selected;
+  }
+
+  function updateSelectOptions() {
+    const selectedValues = getSelectedInventaris();
+    document.querySelectorAll("select[id$='-inventaris']").forEach(select => {
+      const currentValue = select.value;
+      Array.from(select.options).forEach(option => {
+        if (option.value === "" || option.value === currentValue) {
+          option.hidden = false;
+        } else if (selectedValues.includes(option.value)) {
+          option.hidden = true;
+        } else {
+          option.hidden = false;
+        }
+      });
+    });
+  }
+
+  function attachRemoveHandler(formElement) {
+    const removeBtn = formElement.querySelector(".remove-btn");
+    if (removeBtn) {
+      removeBtn.addEventListener("click", () => {
+        formElement.remove();
+        updateTotalForms();
+        updateSelectOptions();
+      });
+    }
+  }
+
+  function attachChangeHandler(formElement) {
+    const select = formElement.querySelector("select[id$='-inventaris']");
+    if (select) {
+      select.addEventListener("change", updateSelectOptions);
+    }
+  }
+
+  document.querySelectorAll(".pemindahan-detail-form").forEach(form => {
+    attachRemoveHandler(form);
+    attachChangeHandler(form);
+  });
+
+  updateSelectOptions();
+</script>
+
+<style>
+  .hidden { display: none; }
+  table th, table td { vertical-align: middle; }
+</style>
+{% endblock %}

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% block title %}
+     <title>Inventaris ME UWIKA</title>
+    {% endblock %}
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'catalog/css/base_style.css'%}">
+    {% block stylecss %}
+     
+    {% endblock %}
+</head>
+<body>
+    {% block header %}
+        <header>
+            <nav>
+                <h1>Sistem Inventaris Barang</h1>
+                <ul>
+                    {% if user.is_authenticated %}
+                        <li><a href="{% url 'index' %}">Home</a></li>
+                        <li><a href="{% url 'barang' %}">Barang</a></li>
+         
+                        <li><a href="{% url 'pinjam-barang' %}">Pinjam-Barang</a></li>
+                      
+                    <form action="{% url 'logout' %}" method="post" style="display: inline; background-color: transparent;">
+                        {% csrf_token %}
+                        <button type="submit" class="logout-button">Log Out</button>
+                    </form>
+                    {% else %}
+                        <p>You are not logged in</p>
+                        <li><a href="{% url 'login'%}">Log In</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </header>
+    {% endblock %}
+    {% block content %}
+     <main>
+       <h1>Selamat datang di inventaris ME Uwika</h1>
+     </main>
+    {% endblock %}
+    {% block footer %}
+     <footer>
+        <p>Copyright made by steven gabriel</p>
+     </footer>
+    {% endblock %}
+</body>
+</html>

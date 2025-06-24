@@ -1,0 +1,54 @@
+{% extends 'staff_me/base.html' %}
+
+{% block content %}
+<div class="dashboard-container">
+    <h1 class="dashboard-title">🎉 Selamat Datang, Staff ME!</h1>
+    <p class="dashboard-subtitle">Kelola inventaris dengan mudah, cepat, dan terstruktur.</p>
+
+    <!-- Ringkasan Widget -->
+    <div class="summary-widgets">
+        <div class="widget-card">
+            <div class="widget-icon bg-green">📦</div>
+            <div class="widget-info">
+                <h3>Barang Tersedia</h3>
+                <p class="count">{{ total_barang }}</p>
+                <a href="{% url 'list_barang' %}" class="btn-widget">Lihat Barang</a>
+            </div>
+        </div>
+        <div class="widget-card">
+            <div class="widget-icon bg-blue">📍</div>
+            <div class="widget-info">
+                <h3>Lokasi Barang</h3>
+                <p class="count">{{ total_lokasi }} Lokasi</p>
+                <a href="{% url 'list_lokasi' %}" class="btn-widget">Lihat Lokasi</a>
+            </div>
+        </div>
+        <div class="widget-card">
+            <div class="widget-icon bg-orange">📑</div>
+            <div class="widget-info">
+                <h3>Peminjaman</h3>
+                <p class="count">{{ peminjaman_baru }} Peminjaman</p>
+                <a href="{% url 'list_peminjaman' %}" class="btn-widget">Kelola Peminjaman</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Info Tambahan -->
+    <div class="info-section">
+        <div class="info-card"> 
+            <h4>Jumlah Unit Dipinjam</h4>
+            <p class="info-number"> {{ peminjaman_unit }}</p>
+        </div>
+        <div class="info-card">
+            <h4>Jumlah Unit Rusak</h4>
+            <p class="info-number">{{ total_unit_rusak }}</p>
+        </div>
+    </div>
+
+    <!-- Catatan -->
+    <div class="note-section">
+        <h4>📌 Catatan</h4>
+        <p>Pastikan data diperbarui secara berkala agar laporan tetap akurat.</p>
+    </div>
+</div>
+{% endblock %}

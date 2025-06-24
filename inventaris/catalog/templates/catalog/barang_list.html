@@ -1,0 +1,254 @@
+{% extends 'base_generic.html' %}
+{% block stylecss %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'catalog/css/list_barang.css'%}">
+
+<style>
+    .search-items {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 30px;
+        padding: 20px;
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+    .search-items input[type="text"],
+    .search-items select {
+        flex: 1;
+        min-width: 200px;
+        padding: 12px 15px;
+        border: 2px solid #ddd;
+        border-radius: 6px;
+        font-size: 16px;
+        transition: border-color 0.3s;
+    }
+
+    .search-items input[type="text"]:focus,
+    .search-items select:focus {
+        outline: none;
+        border-color: #3949ab;
+    }
+
+    .search-items button {
+        padding: 12px 20px;
+        background-color: #3949ab;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 16px;
+        transition: background-color 0.3s;
+    }
+
+    .search-items button:hover {
+        background-color: #303f9f;
+    }
+
+    .no-results {
+        text-align: center;
+        padding: 40px;
+        color: #666;
+        font-style: italic;
+        display: none;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+    }
+
+    thead {
+        background-color: #3949ab;
+        color: white;
+    }
+
+    th, td {
+        padding: 12px 15px;
+        border: 1px solid #ddd;
+        text-align: left;
+    }
+
+    tbody tr:hover {
+        background-color: #e3f2fd;
+        transition: background-color 0.2s;
+    }
+
+    tbody td a {
+        color: #3949ab;
+        text-decoration: none;
+        font-weight: 500;
+    }
+
+    tbody td a:hover {
+        text-decoration: underline;
+    }
+
+    .pagination {
+        margin-top: 30px;
+        text-align: center;
+    }
+
+    .pagination a {
+        margin: 0 8px;
+        text-decoration: none;
+        color: #3949ab;
+        font-weight: bold;
+    }
+
+    .pagination .current {
+        font-weight: bold;
+        color: #222;
+    }
+
+    @media (max-width: 768px) {
+        .search-items {
+            flex-direction: column;
+            align-items: stretch;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<main>
+    <h1>Daftar Barang</h1>
+    
+    <div class="search-items">
+        <input type="text" id="nama_barang" name="nama_barang" placeholder="Cari nama barang..." onkeyup="searchItems()">
+        <select name="jenis_barang" id="jenis_barang" onchange="searchItems()">
+            <option value="">Semua Jenis</option>
+            {% for jenis in jenis_barang %}
+                <option value="{{jenis.nama}}">{{jenis.nama}}</option>
+            {% endfor %}
+        </select>
+        <button type="button" onclick="clearSearch()">🔍 Clear</button>
+
+    </div>
+    
+    <div>
+        <table id="barangTable">
+            <thead>
+                <tr>
+                    <td>Nama Barang</td>
+                    <td>Total Stok</td>
+                    <td>Jenis Barang</td>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+                {% for barang in list_barang %}
+                    <tr>
+                        <td><a href="{{barang.get_absolute_url}}">{{barang.nama}}</a></td>
+                        <td>{{barang.total_stok}}</td>
+                        <td>{{barang.jenis_barang}}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        
+        <div id="noResults" class="no-results">
+            <p>Tidak ada barang yang ditemukan sesuai kriteria pencarian.</p>
+        </div>
+    </div>
+    
+    <div class="pagination">
+        <span class="step-links">
+            {% if page_obj.has_previous %}
+                <a href="?page=1">&laquo; pertama</a>
+                <a href="?page={{ page_obj.previous_page_number }}">sebelumnya</a>
+            {% endif %}
+            
+            <span class="current">
+                Halaman {{ page_obj.number }} dari {{ page_obj.paginator.num_pages }}.
+            </span>
+            
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}">berikutnya</a>
+                <a href="?page={{ page_obj.paginator.num_pages }}">terakhir &raquo;</a>
+            {% endif %}
+        </span>
+    </div>
+</main>
+
+<script>
+    function searchItems() {
+        var namaInput, jenisSelect, namaFilter, jenisFilter, table, tbody, tr, i, namaCell, jenisCell, visibleRows;
+        
+        // Ambil elemen input dan select
+        namaInput = document.getElementById("nama_barang");
+        jenisSelect = document.getElementById("jenis_barang");
+        
+        // Ambil nilai filter
+        namaFilter = namaInput.value.toUpperCase();
+        jenisFilter = jenisSelect.value.toUpperCase();
+        
+        // Ambil tabel dan tbody
+        table = document.getElementById("barangTable");
+        tbody = document.getElementById("tableBody");
+        tr = tbody.getElementsByTagName("tr");
+        
+        visibleRows = 0;
+        
+        // Loop melalui semua baris tabel
+        for (i = 0; i < tr.length; i++) {
+            namaCell = tr[i].getElementsByTagName("td")[0];
+            jenisCell = tr[i].getElementsByTagName("td")[2];
+            
+            if (namaCell && jenisCell) {
+                var namaText = namaCell.textContent || namaCell.innerText;
+                var jenisText = jenisCell.textContent || jenisCell.innerText;
+                
+                // Cek apakah baris cocok dengan filter
+                var namaMatch = namaText.toUpperCase().indexOf(namaFilter) > -1;
+                var jenisMatch = jenisFilter === "" || jenisText.toUpperCase().indexOf(jenisFilter) > -1;
+                
+                if (namaMatch && jenisMatch) {
+                    tr[i].style.display = "";
+                    visibleRows++;
+                } else {
+                    tr[i].style.display = "none";
+                }
+            }
+        }
+        
+        // Tampilkan pesan "tidak ada hasil" jika tidak ada baris yang terlihat
+        var noResults = document.getElementById("noResults");
+        var tableElement = document.getElementById("barangTable");
+        
+        if (visibleRows === 0) {
+            noResults.style.display = "block";
+            tableElement.style.display = "none";
+        } else {
+            noResults.style.display = "none";
+            tableElement.style.display = "table";
+        }
+    }
+    
+    function clearSearch() {
+        // Reset input dan select
+        document.getElementById("nama_barang").value = "";
+        document.getElementById("jenis_barang").value = "";
+        
+        // Tampilkan semua baris
+        var tbody = document.getElementById("tableBody");
+        var tr = tbody.getElementsByTagName("tr");
+        
+        for (var i = 0; i < tr.length; i++) {
+            tr[i].style.display = "";
+        }
+        
+        // Sembunyikan pesan "tidak ada hasil"
+        document.getElementById("noResults").style.display = "none";
+        document.getElementById("barangTable").style.display = "table";
+    }
+    
+    // Event listener untuk pencarian real-time
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById("nama_barang").addEventListener("input", searchItems);
+        document.getElementById("jenis_barang").addEventListener("change", searchItems);
+    });
+</script>
+{% endblock %}

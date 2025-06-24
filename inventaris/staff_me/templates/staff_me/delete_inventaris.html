@@ -1,0 +1,10 @@
+{% extends 'staff_me/base.html' %}
+{% block content %}
+<h2>Hapus Inventaris</h2>
+<p>Apakah kamu yakin ingin menghapus inventaris ini?</p>
+<form method="POST">
+    {% csrf_token %}
+    <button type="submit">Ya, hapus</button>
+    <a href="{% url 'list_inventaris' %}">Batal</a>
+</form>
+{% endblock %}

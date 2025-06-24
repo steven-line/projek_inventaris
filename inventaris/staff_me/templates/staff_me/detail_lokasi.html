@@ -1,0 +1,13 @@
+{% extends 'staff_me/base.html' %}
+{% block content %}
+<h2>Detail Lokasi</h2>
+
+<p><strong>Lantai</strong> {{ data.lantai }}</p>
+<p><strong>Ruangan</strong> {{ data.ruangan }}</p>
+
+<p>
+    <a href="{% url 'update_lokasi' data.id %}">Edit</a> |
+    <a href="{% url 'delete_lokasi' data.id %}">Hapus</a> |
+    <a href="{% url 'list_lokasi' %}">Kembali</a>
+</p>
+{% endblock %}

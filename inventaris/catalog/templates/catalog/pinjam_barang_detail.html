@@ -1,0 +1,118 @@
+{% extends 'base_generic.html' %}
+{% block content %}
+<style>
+main {
+    padding: 20px;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+h1 {
+    font-size: 26px;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+/* Tabel */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0,0,0,0.05);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+thead {
+    background-color: #f5f5f5;
+}
+
+table th, table td {
+    padding: 12px;
+    border: 1px solid #ddd;
+    text-align: left;
+}
+
+table th {
+    font-weight: bold;
+    color: #444;
+}
+
+table td {
+    color: #333;
+}
+
+/* Responsive Table */
+@media (max-width: 768px) {
+    table, thead, tbody, th, td, tr {
+        display: block;
+    }
+
+    thead {
+        display: none;
+    }
+
+    tr {
+        margin-bottom: 15px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        padding: 10px;
+        background-color: #fafafa;
+    }
+
+    td {
+        position: relative;
+        padding-left: 50%;
+        text-align: right;
+        border: none;
+    }
+
+    td::before {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        width: 45%;
+        padding-right: 10px;
+        white-space: nowrap;
+        font-weight: bold;
+        text-align: left;
+        color: #666;
+    }
+
+    td:nth-of-type(1)::before { content: "No"; }
+    td:nth-of-type(2)::before { content: "Nama Barang"; }
+    td:nth-of-type(3)::before { content: "Jumlah"; }
+    td:nth-of-type(4)::before { content: "Kondisi"; }
+    td:nth-of-type(5)::before { content: "Lokasi"; }
+}
+</style>
+
+<main>
+    <h1>Detail Pinjam</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>No</th>
+                <th>Nama Barang</th>
+                <th>Jumlah</th>
+               
+              
+            </tr>
+        </thead>
+        <tbody>
+            {% for barang in peminjaman.peminjamandetail_set.all %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ barang.barang }}</td>
+                <td>{{ barang.jumlah }}</td>
+                
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5">Tidak ada data barang untuk peminjaman ini.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</main>
+{% endblock %}

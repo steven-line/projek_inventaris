@@ -1,0 +1,12 @@
+{% extends 'staff_me/base.html' %}
+{% block content %}
+<h2>Detail Pengumuman</h2>
+
+<p><strong>Judul:</strong> {{ data.title }}</p>
+<p><strong>Isi:</strong> {{ data.message }}</p>
+<p>
+    <a href="{% url 'update_announcement' data.id %}">Edit</a> |
+    <a href="{% url 'delete_announcement' data.id %}">Hapus</a> |
+    <a href="{% url 'list_announcement' %}">Kembali</a>
+</p>
+{% endblock %}

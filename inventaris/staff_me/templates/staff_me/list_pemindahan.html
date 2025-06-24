@@ -1,0 +1,70 @@
+{% extends 'staff_me/base.html' %}
+{% load static %}
+
+{% block content %}
+<h2>Daftar Pemindahan</h2>
+
+<form method="get" action="">
+    <input type="text" name="q" placeholder="Cari nama atau jenis..." value="{{ query }}">
+    <button type="submit">Cari</button>
+    <a href="{% url 'list_pemindahan' %}" class="btn btn-secondary">Clear</a>
+</form>
+<a href="{% url 'create_pemindahan' %}" class="btn btn-primary">+ Tambah Pemindahan</a>
+
+<table border="1" cellpadding="10" cellspacing="0">
+    <thead>
+        <tr>
+            <th>No</th>
+            <th>Staff</th>
+            <th>Tanggal Pemindahan</th>
+            <th>Keterangan</th>
+            <th>Aksi</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for data in dataset %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ data.staff }}</td>
+            <td>{{ data.tanggal_pemindahan }}</td>
+            <td>{{ data.keterangan}} </td>
+          
+           
+            <td>
+                <a href="{% url 'detail_pemindahan' data.id %}">Detail</a> |
+                <a href="{% url 'update_pemindahan' data.id %}">Edit</a> 
+             
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="6">Tidak ada data pemindahan.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<div class="pagination">
+    <span>
+        Halaman {{ page_obj.number }} dari {{ page_obj.paginator.num_pages }}
+    </span>
+    <div>
+        {% if page_obj.has_previous %}
+            <a href="?q={{ query }}&page=1">Awal</a>
+            <a href="?q={{ query }}&page={{ page_obj.previous_page_number }}">Sebelumnya</a>
+        {% endif %}
+
+        {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+                <strong>{{ num }}</strong>
+            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                <a href="?q={{ query }}&page={{ num }}">{{ num }}</a>
+            {% endif %}
+        {% endfor %}
+
+        {% if page_obj.has_next %}
+            <a href="?q={{ query }}&page={{ page_obj.next_page_number }}">Berikutnya</a>
+            <a href="?q={{ query }}&page={{ page_obj.paginator.num_pages }}">Akhir</a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

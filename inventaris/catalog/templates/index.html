@@ -1,0 +1,72 @@
+{% extends 'base_generic.html' %}
+
+{% block stylecss %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'catalog/css/index.css' %}">
+{% endblock %}
+
+{% block content %}
+<main>
+    <div class="announcements">
+        {% if announcement %}
+            <div class="announcement-heading">
+                <h3>{{ announcement.title }}</h3>
+                
+            </div>
+            <p>{{ announcement.message }}</p>
+        {% else %}
+          <p>Tidak ada pengumuman</p>
+        {% endif %}   
+    </div>
+
+    <div class="home-information">
+        <h1>Inventaris ME - Universitas Widya Kartika</h1>
+        <p>Sistem informasi pengelolaan barang & pemindahan laboratorium Teknik Elektro</p>
+    </div>
+
+    <div class="items-conditions-group">
+        <div class="items-card">
+            <h2>Total Barang</h2>
+            <p class="total">{{ total_barang|default_if_none:"0" }}</p>
+        </div>
+        <div class="items-card">
+            <h2>Total Barang Rusak</h2>
+            <p class="total">{{ total_barang_rusak|default_if_none:"0" }}</p>
+        </div>
+        <div class="items-card">
+            <h2>Total Barang Baik</h2>
+            <p class="total">{{ total_barang_baik|default_if_none:"0" }}</p>
+        </div>
+    </div>
+
+    <div class="recent-activity">
+        <h2>Aktivitas Pemindahan Terbaru</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Nama Barang</th>
+                    <th>Jenis</th>
+                    <th>Jumlah</th>
+                    <th>Lokasi</th>
+                    <th>Tanggal</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for aktivitas in aktivitas_terbaru %}
+                    <tr>
+                        <td>{{ aktivitas.inventaris.barang.nama}}</td>
+                        <td>{{ aktivitas.inventaris.barang.jenis_barang.nama }}</td>
+                        <td>{{ aktivitas.jumlah }}</td>
+                        <td>{{ aktivitas.lokasi_tujuan }}</td>
+                        <td>{{ aktivitas.pemindahan.tanggal_pemindahan|date:"d/m/Y" }}</td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="5">Belum ada aktivitas pemindahan.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</main>
+{% endblock %}

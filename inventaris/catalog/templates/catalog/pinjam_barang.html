@@ -1,0 +1,215 @@
+{% extends 'base_generic.html' %}
+{% block content %}
+<style>
+/* Container utama */
+.data_pinjam_barang {
+    background-color: #ffffff;
+    padding: 20px;
+    margin: 20px auto;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    max-width: 1200px;
+    overflow-x: auto;
+}
+
+/* Header dan tombol */
+.data_pinjam_barang h2 {
+    font-size: 24px;
+    margin-bottom: 10px;
+    color: #333;
+    display: inline-block;
+}
+
+.data_pinjam_barang > div {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.data_pinjam_barang button {
+    background-color: #2b7cff;
+    color: #fff;
+    padding: 10px 14px;
+    border: none;
+    border-radius: 5px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.data_pinjam_barang button a {
+    color: #fff;
+    text-decoration: none;
+}
+
+.data_pinjam_barang button:hover {
+    background-color: #1a5dd8;
+}
+
+/* Tabel */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+thead {
+    background-color: #f0f0f0;
+}
+
+table th, table td {
+    padding: 12px 10px;
+    border: 1px solid #ddd;
+    text-align: left;
+}
+
+table a {
+    color: #2b7cff;
+    text-decoration: none;
+}
+
+table a:hover {
+    text-decoration: underline;
+}
+
+form button {
+    background-color: orange;
+    color: #fff;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 4px;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+form button:hover {
+    background-color: darkorange;
+}
+
+/* Status Span */
+td span {
+    font-weight: bold;
+    display: inline-block;
+}
+
+td span.status-pengembalian {
+    color: orange;
+}
+
+td span.status-returned {
+    color: green;
+}
+
+td span.status-unknown {
+    color: gray;
+}
+
+/* RESPONSIVE TABLE */
+@media (max-width: 768px) {
+    table, thead, tbody, th, td, tr {
+        display: block;
+    }
+
+    thead {
+        display: none;
+    }
+
+    tr {
+        margin-bottom: 15px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        padding: 10px;
+    }
+
+    td {
+        border: none;
+        position: relative;
+        padding-left: 50%;
+        text-align: right;
+    }
+
+    td::before {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        width: 45%;
+        padding-right: 10px;
+        white-space: nowrap;
+        font-weight: bold;
+        text-align: left;
+    }
+
+    td:nth-of-type(1)::before { content: "No"; }
+    td:nth-of-type(2)::before { content: "Detail"; }
+    td:nth-of-type(3)::before { content: "Tanggal Pinjam"; }
+    td:nth-of-type(4)::before { content: "Tanggal Dikembalikan"; }
+    td:nth-of-type(5)::before { content: "Status"; }
+    td:nth-of-type(6)::before { content: "Keterangan"; }
+    td:nth-of-type(7)::before { content: "Catatan Staff"; }
+    td:nth-of-type(8)::before { content: "Aksi"; }
+}
+</style>
+
+<main>
+    <div class="data_pinjam_barang">
+        <div>
+            <h2>Data Pinjam Barang</h2>
+            <button><a href="{% url 'create-peminjaman' %}">Pinjam Barang</a></button>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>Detail</th>
+                    <th>Tanggal Pinjam</th>
+                    <th>Tanggal Dikembalikan</th>
+                    <th>Status</th>
+                    <th>Keterangan</th>
+                    <th>Catatan Staff</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for pinjam in list_rental %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td><a href="{{ pinjam.get_absolute_url }}">Detail Pinjam</a></td>
+                    <td>{{ pinjam.tanggal_pinjam }}</td>
+                    <td>{{ pinjam.tanggal_dikembalikan }}</td>
+                    <td>{{ pinjam.get_status_display }}</td>
+                    <td>{{ pinjam.keterangan }}</td>
+                    <td>{{ pinjam.catatan_staff }}</td>
+                    <td>
+                        {% if pinjam.status == "pending"%}
+
+                        <form method="post" action="{% url 'batalkan-peminjaman' pinjam.pk %}">
+                                {% csrf_token %}
+                                <button type="submit" onclick="return confirm('Ajukan pembatalan peminjaman ini?')">Batal Pinjam</button>
+                            </form>
+
+
+                        {% elif pinjam.status == "approved" %}
+                            <form method="post" action="{% url 'ajukan-pengembalian' pinjam.pk %}">
+                                {% csrf_token %}
+                                <button type="submit" onclick="return confirm('Ajukan pengembalian barang ini?')">Ajukan Pengembalian</button>
+                            </form>
+                        {% elif pinjam.status == "pengembalian_diajukan" %}
+                            <span class="status-pengembalian">Menunggu Verifikasi</span>
+                        {% elif pinjam.status == "returned" %}
+                            <span class="status-returned">Sudah Dikembalikan</span>
+                        {% else %}
+                            <span class="status-unknown">-</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="8">Belum ada data peminjaman.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</main>
+{% endblock %}

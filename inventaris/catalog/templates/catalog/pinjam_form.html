@@ -1,0 +1,177 @@
+{% extends 'base_generic.html' %}
+
+{% block stylecss %}
+<style>
+  main {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+
+  form {
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.05);
+  }
+
+  .peminjaman-detail-form {
+    border: 1px solid #ddd;
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 5px;
+    background: #f9f9f9;
+    position: relative;
+  }
+
+  #add-form-btn,
+  #submit-button {
+    padding: 10px 20px;
+    margin-top: 15px;
+    border: none;
+    border-radius: 5px;
+    background-color: #3498db;
+    color: white;
+    cursor: pointer;
+  }
+
+  #add-form-btn:hover,
+  #submit-button:hover {
+    background-color: #2980b9;
+  }
+
+  button.remove-btn {
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    padding: 5px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+  }
+
+  button.remove-btn:hover {
+    background-color: #c0392b;
+  }
+
+  .hidden {
+    display: none;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<main>
+  <h1>Form Peminjaman Barang</h1>
+  <form action="" id="form-peminjaman" method="post">
+    {% csrf_token %}
+    
+    {{ peminjaman_form.as_p }}
+    {{ peminjaman_detail_formset.non_form_errors }}
+    {{ peminjaman_detail_formset.management_form }}
+
+    <div id="peminjaman-detail-form-list">
+      {% for peminjaman_detail_form in peminjaman_detail_formset %}
+        <div class="peminjaman-detail-form">
+          {{ peminjaman_detail_form.as_p }}
+          {% if not forloop.first %}
+            <button type="button" class="remove-btn">Remove</button>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+
+    <!-- Empty form (template) -->
+    <div id="empty-form" class="hidden">
+      <div class="peminjaman-detail-form">
+        {{ peminjaman_detail_formset.empty_form.as_p }}
+      </div>
+    </div>
+
+    <button id="add-form-btn" type="button">+ Tambah Barang</button>
+    
+    <input id="submit-button" type="submit" value="Kirim">
+  </form>
+</main>
+
+<script>
+  const addBtn = document.getElementById("add-form-btn");
+  const totalForms = document.getElementById("id_peminjamandetail_set-TOTAL_FORMS");
+  const formList = document.getElementById("peminjaman-detail-form-list");
+  const emptyForm = document.getElementById("empty-form").querySelector(".peminjaman-detail-form");
+  
+  addBtn.addEventListener("click", function (e) {
+    e.preventDefault();
+
+    const currentFormCount = document.querySelectorAll(".peminjaman-detail-form").length;
+    const newForm = emptyForm.cloneNode(true);
+    const regex = new RegExp('__prefix__', 'g');
+
+    newForm.innerHTML = newForm.innerHTML.replace(regex, currentFormCount);
+    newForm.setAttribute("id", `form-${currentFormCount}`);
+
+    // Tambahkan tombol hapus
+    const removeBtn = document.createElement("button");
+    removeBtn.type = "button";
+    removeBtn.className = "remove-btn";
+    removeBtn.textContent = "Remove";
+    removeBtn.addEventListener("click", () => {
+      newForm.remove();
+      updateTotalForms();
+    });
+
+    newForm.appendChild(removeBtn);
+    formList.appendChild(newForm);
+    totalForms.setAttribute("value", currentFormCount + 1);
+  });
+function updateTotalForms() {
+  const total = document.querySelectorAll(".peminjaman-detail-form").length;
+  totalForms.setAttribute("value", total);
+}
+
+function setRemoveListeners() {
+  document.querySelectorAll(".remove-btn").forEach(button => {
+    button.addEventListener("click", function () {
+      this.closest(".peminjaman-detail-form").remove();
+      updateTotalForms();
+    });
+  });
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+  setRemoveListeners();
+});
+  function getSelectedBarang() {
+    const selected = [];
+    document.querySelectorAll("select[id$='-barang']").forEach(select => {
+      if (select.value) {
+        selected.push(select.value);
+      }
+
+    });
+    return selected;
+  }
+  function updateSelectOptions() {
+    const selectedValues = getSelectedBarang();
+    document.querySelectorAll("select[id$='-barang']").forEach(select => {
+      const currentValue = select.value;
+      [...select.options].forEach(option => {
+        if (option.value === '' || option.value === currentValue) {
+          option.hidden = false;
+        } else if (selectedValues.includes(option.value)){
+          option.hidden = true;
+        } else {
+          option.hidden = false;
+        }
+      })
+    })
+  }
+  document.addEventListener("change", function (e) {
+    if (e.target.matches("select[id$='-barang']")) {
+      updateSelectOptions();
+  }
+});
+</script>
+{% endblock %}

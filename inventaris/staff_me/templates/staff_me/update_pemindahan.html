@@ -1,0 +1,17 @@
+{% extends 'staff_me/base.html' %}
+{% block content %}
+<h2>Edit Pemindahan: {{ pemindahan }}</h2>
+<form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+   {{ formset.management_form }}
+    <table>
+        {% for form in formset %}
+        {{ form }}
+        {% endfor %}
+    </table>
+    
+    <button type="submit">Update</button>
+</form>
+<a href="{% url 'list_pemindahan' %}">← Kembali ke Daftar Pemindahan</a>
+{% endblock %}

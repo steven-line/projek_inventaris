@@ -1,0 +1,12 @@
+{% extends 'staff_me/base.html' %}
+{% block content %}
+<h2>Detail Jenis Barang</h2>
+
+<p><strong>Nama:</strong> {{ data.nama }}</p>
+
+<p>
+    <a href="{% url 'update_jenis_barang' data.id %}">Edit</a> |
+    <a href="{% url 'delete_jenis_barang' data.id %}">Hapus</a> |
+    <a href="{% url 'list_jenis_barang' %}">Kembali</a>
+</p>
+{% endblock %}
